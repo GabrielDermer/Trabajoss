@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Trabajos</title>
+    <meta name="theme-color" content="#4CAF50">
+    <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiUmVnaXN0cm8gZGUgVHJhYmFqb3MiLCJzaG9ydF9uYW1lIjoiVHJhYmFqb3MiLCJzdGFydF91cmwiOiIuIiwiZGlzcGxheSI6InN0YW5kYWxvbmUiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiI2ZmZmZmZiIsInRoZW1lX2NvbG9yIjoiIzRDQUY1MCIsImljb25zIjpbeyJzcmMiOiJkYXRhOmltYWdlL3BuZztiYXNlNjQsaVZCT1J3MEtHZ29BQUFBTlNVaEVVZ0FBQUFFQUFBQUJDQVlBQUFBZkZjU0pBQUFBQTFCTVZFVUFBQUQvLy84QW41K2ZBQUFBQVhSU1RsTUFRT2JZWmdBQUFBSkNTVVJCVkhpY1k5aGxBQUFBR1hSRldIUlRiMlowZDJGeVpRQkJaRzlpWlNCSmJXRm5aVkpsWVdSNWNjbGxQQUFBQUFCSlJVNUVya0pnZ2c9PSIsInNpemVzIjoiMXgxIn1dfQ==">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            padding: 10px;
+            max-width: 100%;
+            background-color: #f5f5f5;
+            padding-bottom: 80px;
+        }
+
+        .encabezado {
+            background-color: #4CAF50;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .selector-mes {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .selector-mes select {
+            flex: 2;
+            padding: 12px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: white;
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%234CAF50' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 20px;
+            padding-right: 40px;
+        }
+
+        .resumen-mes {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .resumen-mes h3 {
+            color: #4CAF50;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .botones {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        button {
+            padding: 15px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            flex: 1;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: transform 0.1s, background-color 0.2s;
+        }
+
+        button:active {
+            transform: translateY(1px);
+            background-color: #3d8b40;
+        }
+
+        .trabajo-card {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fecha-separador {
+            background: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin: 20px 0 10px 0;
+            font-weight: 500;
+            text-transform: capitalize;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .campo {
+            margin-bottom: 12px;
+        }
+
+        .campo label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            color: #333;
+            font-size: 0.9em;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.2s;
+            background-color: #f8f8f8;
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #4CAF50;
+            background-color: white;
+        }
+
+        textarea {
+            height: 80px;
+            resize: vertical;
+        }
+
+        .valor-input {
+            font-size: 18px;
+            font-weight: bold;
+            color: #4CAF50;
+        }
+
+        .total {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #4CAF50;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+            box-shadow: 0 -2px 4px rgba(0,0,0,0.2);
+        }
+
+        .eliminar-btn {
+            background: #ff4444;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .estadisticas {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .estadistica {
+            background: #f8f8f8;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .estadistica-valor {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #4CAF50;
+            margin-top: 4px;
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 8px;
+            }
+
+            .botones {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+            }
+
+            .fecha-separador {
+                font-size: 0.9em;
+            }
+        }
+
+        .offline-indicator {
+            display: none;
+            background: #ff9800;
+            color: white;
+            text-align: center;
+            padding: 8px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
+
+        .offline .offline-indicator {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="offline-indicator">
+        Modo sin conexión
+    </div>
+
+    <div class="encabezado">
+        <h2>Registro de Trabajos</h2>
+    </div>
+
+    <div class="selector-mes">
+        <select id="mesSelector" onchange="cambiarMes()">
+            <option value="1">Enero</option>
+            <option value="2">Febrero</option>
+            <option value="3">Marzo</option>
+            <option value="4">Abril</option>
+            <option value="5">Mayo</option>
+            <option value="6">Junio</option>
+            <option value="7">Julio</option>
+            <option value="8">Agosto</option>
+            <option value="9">Septiembre</option>
+            <option value="10">Octubre</option>
+            <option value="11">Noviembre</option>
+            <option value="12">Diciembre</option>
+        </select>
+    </div>
+
+    <div class="resumen-mes">
+        <h3>Resumen del Mes</h3>
+        <div class="estadisticas">
+            <div class="estadistica">
+                <div>Total Trabajos</div>
+                <div id="totalTrabajos" class="estadistica-valor">0</div>
+            </div>
+            <div class="estadistica">
+                <div>Total $</div>
+                <div id="totalMes" class="estadistica-valor">0</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="botones">
+        <button onclick="agregarTrabajo()">📝 Nuevo Trabajo</button>
+        <button onclick="descargarExcel()">📥 Exportar Mes</button>
+    </div>
+
+    <div id="contenedorTrabajos"></div>
+
+    <div class="total">
+        Total Mes: $<span id="totalValor">0</span>
+    </div>
+
+    <script>
+        let trabajosPorMes = {};
+
+        // Cargar datos guardados
+        function cargarDatos() {
+            const datosGuardados = localStorage.getItem('trabajosPorMes');
+            if (datosGuardados) {
+                trabajosPorMes = JSON.parse(datosGuardados);
+            }
+        }
+
+        // Guardar datos
+        function guardarDatos() {
+            localStorage.setItem('trabajosPorMes', JSON.stringify(trabajosPorMes));
+        }
+
+        function inicializarMes() {
+            cargarDatos();
+            const mesActual = new Date().getMonth() + 1;
+            document.getElementById('mesSelector').value = mesActual;
+            if (!trabajosPorMes[mesActual]) {
+                trabajosPorMes[mesActual] = [];
+            }
+            mostrarTrabajosMes(mesActual);
+        }
+
+        function cambiarMes() {
+            const mes = document.getElementById('mesSelector').value;
+            if (!trabajosPorMes[mes]) {
+                trabajosPorMes[mes] = [];
+            }
+            mostrarTrabajosMes(mes);
+        }
+
+        function mostrarTrabajosMes(mes) {
+            const contenedor = document.getElementById('contenedorTrabajos');
+            contenedor.innerHTML = '';
+
+            const trabajos = trabajosPorMes[mes];
+            if (!trabajos || trabajos.length === 0) {
+                return;
+            }
+
+            const trabajosPorFecha = {};
+            trabajos.forEach(trabajo => {
+                if (!trabajosPorFecha[trabajo.fecha]) {
+                    trabajosPorFecha[trabajo.fecha] = [];
+                }
+                trabajosPorFecha[trabajo.fecha].push(trabajo);
+            });
+
+            Object.keys(trabajosPorFecha).sort().forEach(fecha => {
+                const separador = document.createElement('div');
+                separador.className = 'fecha-separador';
+                separador.textContent = new Date(fecha).toLocaleDateString('es-ES', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+                contenedor.appendChild(separador);
+
+                trabajosPorFecha[fecha].forEach(trabajo => {
+                    const trabajoCard = crearTarjetaTrabajo(trabajo);
+                    contenedor.appendChild(trabajoCard);
+                });
+            });
+
+            actualizarEstadisticas();
+        }
+
+        function crearTarjetaTrabajo(trabajo = null) {
+            const card = document.createElement('div');
+            card.className = 'trabajo-card';
+            
+            const fecha = trabajo ? trabajo.fecha : new Date().toISOString().split('T')[0];
+            
+            card.innerHTML = `
+                <div class="campo">
+                    <label>N° Expediente</label>
+                    <input type="text" class="expediente" value="${trabajo ? trabajo.expediente : ''}" placeholder="Ingrese N° expediente">
+                </div>
+                <div class="campo">
+                    <label>Fecha</label>
+                    <input type="date" class="fecha" value="${fecha}" onchange="reordenarTrabajos()">
+                </div>
+                <div class="campo">
+                    <label>Dirección</label>
+                    <input type="text" class="direccion" value="${trabajo ? trabajo.direccion : ''}" placeholder="Ingrese dirección">
+                </div>
+                <div class="campo">
+                    <label>Descripción del Trabajo</label>
+                    <textarea class="descripcion" placeholder="Describe el trabajo realizado">${trabajo ? trabajo.descripcion : ''}</textarea>
+                </div>
+                <div class="campo">
+                    <label>Valor ($)</label>
+                    <input type="number" class="valor valor-input" value="${trabajo ? trabajo.valor : ''}" placeholder="0" onchange="actualizarEstadisticas()">
+                </div>
+                <button class="eliminar-btn" onclick="eliminarTrabajo(this)">🗑️ Eliminar</button>
+            `;
+            
+            return card;
+        }
+
+        function agregarTrabajo() {
+            const mes = document.getElementById('mesSelector').value;
+            const contenedor = document.getElementById('contenedorTrabajos');
+            const trabajo = crearTarjetaTrabajo();
+            contenedor.appendChild(trabajo);
+            actualizarEstadisticas();
+        }
+
+        function eliminarTrabajo(boton) {
+            if (confirm('¿Estás seguro de que quieres eliminar este trabajo?')) {
+                const trabajo = boton.parentNode;
+                trabajo.remove();
+                actualizarEstadisticas();
+            }
+        }
+
+        function reordenarTrabajos() {
+            const mes = document.getElementById('mesSelector').value;
+            guardarTrabajosMes();
+            mostrarTrabajosMes(mes);
+        }
+
+        function guardarTrabajosMes() {
+            const mes = document.getElementById('mesSelector').value;
+            const trabajos = [];
+            document.querySelectorAll('.trabajo-card').forEach(card => {
+                trabajos.push({
+                    expediente: card.querySelector('.expediente').value,
+                    fecha: card.querySelector('.fecha').value,
+                    direccion: card.querySelector('.direccion').value,
+                    descripcion: card.querySelector('.descripcion').value,
+                    valor: parseFloat(card.querySelector('.valor').value) || 0
+                });
+            });
+            trabajosPorMes[mes] = trabajos;
+            guardarDatos();
+        }
+
+        function actualizarEstadisticas() {
+            let total = 0;
+            const trabajos = document.querySelectorAll('.trabajo-card');
+            
+            trabajos.forEach(trabajo => {
+                const valor = parseFloat(trabajo.querySelector('.valor').value) || 0;
+                total += valor;
+            });
+
+            document.getElementById('totalValor').textContent = total.toLocaleString('es-CL');
+            document.getElementById('totalMes').textContent = total.toLocaleString('es-CL');
+            document.getElementById('totalTrabajos').textContent = trabajos.length;
+
+            guardarTrabajosMes();
+        }
+
+        function descargarExcel() {
+            const mes = document.getElementById('mesSelector').value;
+            const trabajos = trabajosPorMes[mes] || [];
+            
+            let contenido = "Fecha,Expediente,Dirección,Trabajo,Valor\n";
+            
+            trabajos.sort((a, b) => new Date(a.fecha) - new Date(b.fecha)).forEach(trabajo => {
+                const fecha = new Date(trabajo.fecha).toLocaleDateString('es-ES');
+                contenido += `${fecha},${trabajo.expediente},${trabajo.direccion},${trabajo.descripcion.replace(/,/g, ';')},${trabajo.valor}\n`;
+            });
+
+            const element = document.createElement('a');
+            element.setAttribute('href', 'data:text/csv;charset=utf-8,' + encodeURIComponent(contenido));
+            element.setAttribute('download', `trabajos_${document.getElementById('mesSelector').options[mes-1].text}_${new Date().getFullYear()}.csv`);
+            element.style.display = 'none';
+            document.body.appendChild(element);
+            element.click();
+            document.body.removeChild(element);
+        }
+
+        // Detectar estado offline/online
+        window.addEventListener('online', function() {
+            document.body.classList.remove('offline');
+        });
+
+        window.addEventListener('offline', function() {
+            document.body.classList.add('offline');
+        });
+
+        // Registrar Service Worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(function(err) {
+                console.log('Service Worker registration failed: ', err);
+            });
+        }
+
+        // Inicializar con el mes actual
+        window.onload = inicializarMes;
+    </script>
+</body>
+</html>
